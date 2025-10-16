@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#002f34">
+    <title>MyMarket - E'lonlar Platformasi</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>🛍️ MyMarket</h1>
+                <p>Eng yaxshi takliflar</p>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="E'lonlarni qidirish..." autocomplete="off">
+                <button onclick="searchProducts()">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Xarita seksiyasi -->
+    <section class="map-section">
+        <div class="container">
+            <h2 class="section-title">E'lonlar Xaritada</h2>
+            <p class="section-subtitle">
+                Markerlarga bosing yoki joylashuv bo'yicha e'lonlarni ko'ring
+            </p>
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="map-controls">
+                    <button class="control-btn" onclick="zoomIn()">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                    <button class="control-btn" onclick="zoomOut()">
+                        <i class="bi bi-dash-lg"></i>
+                    </button>
+                    <button class="control-btn" onclick="resetView()">
+                        <i class="bi bi-geo-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Asosiy Kontent -->
+    <main class="main-container">
+        <div class="container">
+            <!-- Ko'rinishni tanlash -->
+            <div class="view-toggle">
+                <button class="view-btn active" id="gridViewBtn" onclick="showGridView()">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    <span>Ro'yxat</span>
+                </button>
+                <button class="view-btn" id="mapViewBtn" onclick="showMapView()">
+                    <i class="bi bi-map"></i>
+                    <span>Xarita</span>
+                </button>
+            </div>
+
+            <!-- Filtrlash -->
+            <div class="filters">
+                <select id="sortSelect" onchange="sortPhotos()">
+                    <option value="newest">Yangi e'lonlar</option>
+                    <option value="oldest">Eski e'lonlar</option>
+                    <option value="price_low">Arzon narx</option>
+                    <option value="price_high">Qimmat narx</option>
+                </select>
+                
+                <select id="categorySelect" onchange="filterByCategory()">
+                    <option value="all">Barcha kategoriyalar</option>
+                    <option value="electronics">Elektronika</option>
+                    <option value="property">Ko'chmas mulk</option>
+                    <option value="cars">Avtomobillar</option>
+                    <option value="furniture">Mebel</option>
+                </select>
+                
+                <button class="refresh-btn" onclick="loadPhotos()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    <span>Yangilash</span>
+                </button>
+            </div>
+
+            <!-- Yuklanmoqda -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>E'lonlar yuklanmoqda...</p>
+            </div>
+
+            <!-- E'lonlar gridi -->
+            <div id="photosGrid" class="photos-grid">
+                <!-- JavaScript orqali yuklanadi -->
+            </div>
+
+            <!-- Natija topilmadi -->
+            <div id="noResults" class="no-results" style="display: none;">
+                <i class="bi bi-inbox"></i>
+                <h3>Hech narsa topilmadi</h3>
+                <p>Boshqa so'zlar bilan qayta urinib ko'ring</p>
+                <button class="refresh-btn" onclick="loadPhotos()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Barcha e'lonlarni ko'rsatish
+                </button>
+            </div>
+
+            <!-- Xatolik xabari -->
+            <div id="errorMessage" class="error-message" style="display: none;">
+                <i class="bi bi-exclamation-triangle"></i>
+                <h3>Xatolik yuz berdi</h3>
+                <p>Ma'lumotlarni yuklab bo'lmadi. Internet aloqasini tekshiring.</p>
+                <button class="refresh-btn" onclick="loadPhotos()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Qayta urinish
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 MyMarket. Barcha huquqlar himoyalangan.</p>
+        </div>
+    </footer>
+
+    <!-- Surat modal oynasi -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModalFunc()">&times;</span>
+            <div class="modal-body">
+                <div class="modal-image">
+                    <img id="modalImage" alt="E'lon rasmi">
+                </div>
+                <div class="modal-info">
+                    <h3 id="modalTitle"></h3>
+                    <p class="modal-price" id="modalPrice"></p>
+                    <p class="modal-description" id="modalDescription"></p>
+                    <div class="modal-actions">
+                        <button class="btn-contact" onclick="callNumber(currentPhotoPhone)">
+                            <i class="bi bi-telephone-fill"></i>
+                            Qo'ng'iroq qilish
+                        </button>
+                        <button class="btn-sms" onclick="sendSMS(currentPhotoPhone)">
+                            <i class="bi bi-chat-fill"></i>
+                            SMS yuborish
+                        </button>
+                        <button class="btn-location" onclick="showOnMap()">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            Xaritada ko'rsatish
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bildirishnoma -->
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
