@@ -17,5 +17,5 @@ Bu loyiha GitHub Pages da ishlaydigan mobil optimallashtirilgan e'lonlar platfor
 - GitHub Pages
 
 ## Live Demo
-[https://asadbek699.github.io/mymarket/](https://asadbek699.github.io/mymarket/)
+
 https://asadbek669.github.io/mymarket/
