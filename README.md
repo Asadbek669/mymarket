@@ -17,4 +17,4 @@ Bu loyiha GitHub Pages da ishlaydigan mobil optimallashtirilgan e'lonlar platfor
 - GitHub Pages
 
 ## Live Demo
-[https://sizning-username.github.io/mymarket](https://sizning-username.github.io/mymarket)
+[https://asadbek699.github.io/mymarket](https://asadbek699.github.io/mymarket)
